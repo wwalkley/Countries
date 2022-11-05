@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Countries.Api.Models;
+using Countries.Api.Stores;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Countries.Api.Controllers;
 
@@ -6,17 +8,14 @@ namespace Countries.Api.Controllers;
 [Route("api/countries")]
 public sealed class Countries : ControllerBase
 {
+    private CountriesDataStore DummyStore { get; set; } = new();
+
     /// <summary>
     /// Returns a list of Countries. 
     /// </summary>
     [HttpGet]
     public JsonResult GetCountries()
     {
-        return new JsonResult(
-            new List<object>
-            {
-                new { Id = 1, Name = "New Zealand" },
-                new { Id = 2, Name = "Australia" }
-            });
+        return new JsonResult(DummyStore.Countries);
     }
 }
