@@ -1,4 +1,4 @@
-﻿namespace Countries.Api.Models;
+﻿namespace Countries.Api.Models.Country;
 
 public sealed class Country
 {
