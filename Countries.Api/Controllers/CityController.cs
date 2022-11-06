@@ -9,7 +9,7 @@ namespace Countries.Api.Controllers;
 [Route( "api/cities" )]
 public sealed class CityController : ControllerBase
 {
-    private readonly DataStore _dataStore = new( );
+    private DataStore _dataStore = new( );
 
     /// <summary>
     /// Returns a list of <see cref="City"/>
