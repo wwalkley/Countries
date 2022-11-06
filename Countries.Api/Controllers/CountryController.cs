@@ -1,5 +1,4 @@
-﻿using Countries.Api.Models;
-using Countries.Api.Models.Country;
+﻿using Countries.Api.Models.Country;
 using Countries.Api.Stores;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,15 +8,13 @@ namespace Countries.Api.Controllers;
 [Route( "api/countries" )]
 public sealed class CountryController : ControllerBase
 {
-    private DataStore _dataStore = new( );
-
     /// <summary>
     /// Returns a list of <see cref="Country"/>
     /// </summary>
     [HttpGet]
     public ActionResult<IEnumerable<Country>> GetCountries( )
     {
-        return Ok( _dataStore.Countries );
+        return Ok( DataStore.Data.Countries );
     }
 
     /// <summary>
@@ -27,7 +24,7 @@ public sealed class CountryController : ControllerBase
     [HttpGet( "{id}", Name = "GetCountry" )]
     public ActionResult<Country> GetCountry( int id )
     {
-        var country = _dataStore.Countries.FirstOrDefault( c => c.Id == id );
+        var country = DataStore.Data.Countries.FirstOrDefault( c => c.Id == id );
 
         return country == default ? NotFound( ) : Ok( country );
     }
@@ -40,14 +37,34 @@ public sealed class CountryController : ControllerBase
     {
         var country = new Country
         {
-            Id = _dataStore.Countries.Select( c => c.Id ).Max( ) + 1,
+            Id = DataStore.Data.Countries.Select( c => c.Id ).Max( ) + 1,
             Name = request.Name,
             Population = request.Population,
             Capital = request.Capital
         };
 
-        _dataStore.Countries.Add( country );
+        DataStore.Data.Countries.Add( country );
 
         return CreatedAtRoute( "GetCountry", new { country.Id }, country );
+    }
+
+    /// <summary>
+    /// Updates a <see cref="Country"/>
+    /// </summary>
+    [HttpPut( "{id}" )]
+    public ActionResult<Country> Update( int id, CreateOrUpdateCountryDto request )
+    {
+        var country = DataStore.Data.Countries.FirstOrDefault( c => c.Id == id );
+
+        if ( country == default )
+        {
+            return NotFound( );
+        }
+
+        country.Name = request.Name;
+        country.Capital = request.Capital;
+        country.Population = request.Population;
+
+        return NoContent( );
     }
 }
