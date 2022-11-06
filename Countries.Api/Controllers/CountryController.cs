@@ -36,7 +36,7 @@ public sealed class CountryController : ControllerBase
     /// Creates a <see cref="Country"/>
     /// </summary>
     [HttpPost( "" )]
-    public ActionResult<Country> Create( CreateCountry request )
+    public ActionResult<Country> Create( CreateOrUpdateCountryDto request )
     {
         var country = new Country
         {
@@ -48,6 +48,6 @@ public sealed class CountryController : ControllerBase
 
         _dataStore.Countries.Add( country );
 
-        return CreatedAtRoute( "GetCountry", new { id = country.Id }, country );
+        return CreatedAtRoute( "GetCountry", new { country.Id }, country );
     }
 }

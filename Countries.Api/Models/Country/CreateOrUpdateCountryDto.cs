@@ -1,6 +1,6 @@
 ﻿namespace Countries.Api.Models.Country;
 
-public sealed class CreateCountry
+public sealed class CreateOrUpdateCountryDto
 {
     public string Name { get; set; }
     public string Capital { get; set; }
