@@ -8,7 +8,7 @@ namespace Countries.Api.Controllers;
 [Route( "api/countries" )]
 public sealed class Countries : ControllerBase
 {
-    private readonly DataStore _dataStore  = new( );
+    private readonly DataStore _dataStore = new( );
 
     /// <summary>
     /// Returns a list of <see cref="Country"/>
