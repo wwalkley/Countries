@@ -6,15 +6,15 @@ public sealed class CountriesDataStore
 {
     public List<Country> Countries { get; set; }
 
-    public CountriesDataStore()
+    public CountriesDataStore( )
     {
-        Countries = GetCitiesData();
+        Countries = GetCitiesData( );
     }
 
     /// <summary>
     /// Initial data store to test without database.
     /// </summary>
-    private static List<Country> GetCitiesData()
+    private static List<Country> GetCitiesData( )
     {
         return new List<Country>
         {
