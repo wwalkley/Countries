@@ -1,19 +1,20 @@
-﻿using Countries.Api.Models;
-using Countries.Api.Models.City;
+﻿using Countries.Api.Models.City;
 using Countries.Api.Models.Country;
 
 namespace Countries.Api.Stores;
 
 public sealed class DataStore
 {
-    public List<Country> Countries { get; set; }
-    public List<City> Cities { get; set; }
+    public static readonly DataStore Data = new( );
 
-    public DataStore( )
+    private DataStore( )
     {
         Countries = GetCountriesData( );
         Cities = GetCitiesData( );
     }
+
+    public List<Country> Countries { get; }
+    public List<City> Cities { get; }
 
     /// <summary>
     /// Initial data store to test without database for Countries.
@@ -22,9 +23,9 @@ public sealed class DataStore
     {
         return new List<Country>
         {
-            new Country { Id = 1, Name = "New Zealand", Capital = "Wellington", Population = 5131480 },
-            new Country { Id = 2, Name = "Australia", Capital = "Canberra", Population = 25890773 },
-            new Country { Id = 3, Name = "England", Capital = "London", Population = 56489800 }
+            new( ) { Id = 1, Name = "New Zealand", Capital = "Wellington", Population = 5131480 },
+            new( ) { Id = 2, Name = "Australia", Capital = "Canberra", Population = 25890773 },
+            new( ) { Id = 3, Name = "England", Capital = "London", Population = 56489800 }
         };
     }
 
@@ -35,12 +36,12 @@ public sealed class DataStore
     {
         return new List<City>
         {
-            new City { Id = 1, Name = "Auckland", CountryId = 1 },
-            new City { Id = 2, Name = "Wellington", CountryId = 1 },
-            new City { Id = 3, Name = "Canberra", CountryId = 2 },
-            new City { Id = 4, Name = "Melbourne", CountryId = 2 },
-            new City { Id = 5, Name = "London", CountryId = 3 },
-            new City { Id = 6, Name = "Manchester", CountryId = 3 }
+            new( ) { Id = 1, Name = "Auckland", CountryId = 1 },
+            new( ) { Id = 2, Name = "Wellington", CountryId = 1 },
+            new( ) { Id = 3, Name = "Canberra", CountryId = 2 },
+            new( ) { Id = 4, Name = "Melbourne", CountryId = 2 },
+            new( ) { Id = 5, Name = "London", CountryId = 3 },
+            new( ) { Id = 6, Name = "Manchester", CountryId = 3 }
         };
     }
 }

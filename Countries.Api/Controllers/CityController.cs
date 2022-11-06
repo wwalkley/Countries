@@ -1,5 +1,4 @@
-﻿using Countries.Api.Models;
-using Countries.Api.Models.City;
+﻿using Countries.Api.Models.City;
 using Countries.Api.Stores;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,15 +8,13 @@ namespace Countries.Api.Controllers;
 [Route( "api/cities" )]
 public sealed class CityController : ControllerBase
 {
-    private DataStore _dataStore = new( );
-
     /// <summary>
     /// Returns a list of <see cref="City"/>
     /// </summary>
     [HttpGet]
     public ActionResult<IEnumerable<City>> GetCities( )
     {
-        return Ok( _dataStore.Cities );
+        return Ok( DataStore.Data.Cities );
     }
 
     /// <summary>
@@ -27,7 +24,7 @@ public sealed class CityController : ControllerBase
     [HttpGet( "{id}" )]
     public ActionResult<City> GetCity( int id )
     {
-        var city = _dataStore.Cities.FirstOrDefault( c => c.Id == id );
+        var city = DataStore.Data.Cities.FirstOrDefault( c => c.Id == id );
 
         return city == default ? NotFound( ) : Ok( city );
     }
