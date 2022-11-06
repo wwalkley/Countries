@@ -1,4 +1,5 @@
 ﻿using Countries.Api.Models;
+using Countries.Api.Models.City;
 using Countries.Api.Stores;
 using Microsoft.AspNetCore.Mvc;
 

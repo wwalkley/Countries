@@ -1,4 +1,6 @@
 ﻿using Countries.Api.Models;
+using Countries.Api.Models.City;
+using Countries.Api.Models.Country;
 
 namespace Countries.Api.Stores;
 
