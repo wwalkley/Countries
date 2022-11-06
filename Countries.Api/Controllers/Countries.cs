@@ -14,7 +14,7 @@ public sealed class Countries : ControllerBase
     /// Returns a list of <see cref="Country"/>
     /// </summary>
     [HttpGet]
-    public ActionResult GetCountries( )
+    public ActionResult<IEnumerable<Country>> GetCountries( )
     {
         return Ok( DummyStore.Countries );
     }
