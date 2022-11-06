@@ -7,7 +7,7 @@ namespace Countries.Api.Controllers;
 
 [ApiController]
 [Route( "api/countries" )]
-public sealed class Countries : ControllerBase
+public sealed class CountryController : ControllerBase
 {
     private DataStore _dataStore = new( );
 
