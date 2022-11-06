@@ -8,7 +8,7 @@ namespace Countries.Api.Controllers;
 [Route( "api/countries" )]
 public sealed class Countries : ControllerBase
 {
-    private CountriesDataStore DummyStore { get; set; } = new( );
+    private readonly DataStore _dataStore  = new( );
 
     /// <summary>
     /// Returns a list of <see cref="Country"/>
@@ -16,7 +16,7 @@ public sealed class Countries : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<Country>> GetCountries( )
     {
-        return Ok( DummyStore.Countries );
+        return Ok( _dataStore.Countries );
     }
 
     /// <summary>
@@ -26,7 +26,7 @@ public sealed class Countries : ControllerBase
     [HttpGet( "{id}" )]
     public ActionResult<Country> GetCountry( int id )
     {
-        var country = DummyStore.Countries.FirstOrDefault( c => c.Id == id );
+        var country = _dataStore.Countries.FirstOrDefault( c => c.Id == id );
 
         return country == default ? NotFound( ) : Ok( country );
     }
