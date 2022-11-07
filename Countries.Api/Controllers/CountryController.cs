@@ -1,5 +1,6 @@
 ﻿using Countries.Api.Models.Country;
 using Countries.Api.Stores;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Countries.Api.Controllers;
@@ -33,7 +34,7 @@ public sealed class CountryController : ControllerBase
     /// Creates a <see cref="Country"/>
     /// </summary>
     [HttpPost( "" )]
-    public ActionResult<Country> Create( CreateOrUpdateCountryDto request )
+    public ActionResult<Country> Create( Country request )
     {
         var country = new Country
         {
@@ -52,7 +53,7 @@ public sealed class CountryController : ControllerBase
     /// Updates a <see cref="Country"/>
     /// </summary>
     [HttpPut( "{id}" )]
-    public ActionResult<Country> Update( int id, CreateOrUpdateCountryDto request )
+    public ActionResult<Country> Update( int id, Country request )
     {
         var country = DataStore.Data.Countries.FirstOrDefault( c => c.Id == id );
 
@@ -64,6 +65,24 @@ public sealed class CountryController : ControllerBase
         country.Name = request.Name;
         country.Capital = request.Capital;
         country.Population = request.Population;
+
+        return NoContent( );
+    }
+
+    /// <summary>
+    /// Updates a <see cref="Country"/>
+    /// </summary>
+    [HttpPatch( "{id}" )]
+    public ActionResult<Country> PartialUpdate( int id, JsonPatchDocument<Country> patchDocument )
+    {
+        var country = DataStore.Data.Countries.FirstOrDefault( c => c.Id == id );
+
+        if ( country == default )
+        {
+            return NotFound( );
+        }
+
+        patchDocument.ApplyTo( country );
 
         return NoContent( );
     }
