@@ -70,7 +70,7 @@ public sealed class CountryController : ControllerBase
     }
 
     /// <summary>
-    /// Updates a <see cref="Country"/>
+    /// Patches a <see cref="Country"/>
     /// </summary>
     [HttpPatch( "{id}" )]
     public ActionResult<Country> PartialUpdate( int id, JsonPatchDocument<Country> patchDocument )
