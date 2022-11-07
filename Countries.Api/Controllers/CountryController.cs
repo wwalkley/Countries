@@ -86,4 +86,23 @@ public sealed class CountryController : ControllerBase
 
         return NoContent( );
     }
+
+
+    /// <summary>
+    /// Deletes a <see cref="Country"/>
+    /// </summary>
+    [HttpDelete( "{id}" )]
+    public ActionResult Delete( int id )
+    {
+        var country = DataStore.Data.Countries.FirstOrDefault( c => c.Id == id );
+
+        if ( country == default )
+        {
+            return NotFound( );
+        }
+
+        DataStore.Data.Countries.Remove( country );
+
+        return NoContent( );
+    }
 }
