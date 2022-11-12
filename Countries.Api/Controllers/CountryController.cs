@@ -9,6 +9,13 @@ namespace Countries.Api.Controllers;
 [Route( "api/countries" )]
 public sealed class CountryController : ControllerBase
 {
+    private readonly ILogger<CountryController> _logger;
+
+    public CountryController( ILogger<CountryController> logger )
+    {
+        _logger = logger;
+    }
+
     /// <summary>
     /// Returns a list of <see cref="Country"/>
     /// </summary>
@@ -27,7 +34,13 @@ public sealed class CountryController : ControllerBase
     {
         var country = DataStore.Data.Countries.FirstOrDefault( c => c.Id == id );
 
-        return country == default ? NotFound( ) : Ok( country );
+        if ( country == null )
+        {
+            LogNotFound( id );
+            return NotFound( );
+        }
+
+        return Ok( country );
     }
 
     /// <summary>
@@ -36,18 +49,14 @@ public sealed class CountryController : ControllerBase
     [HttpPost( "" )]
     public ActionResult<Country> Create( Country request )
     {
-        var country = new Country
-        {
-            Id = DataStore.Data.Countries.Select( c => c.Id ).Max( ) + 1,
-            Name = request.Name,
-            Population = request.Population,
-            Capital = request.Capital
-        };
+        var country = MapCountry( request );
 
         DataStore.Data.Countries.Add( country );
 
+        _logger.LogInformation( "Created Country with id \'{CountryId}\'", country.Id );
         return CreatedAtRoute( "GetCountry", new { country.Id }, country );
     }
+
 
     /// <summary>
     /// Updates a <see cref="Country"/>
@@ -59,6 +68,7 @@ public sealed class CountryController : ControllerBase
 
         if ( country == default )
         {
+            LogNotFound( id );
             return NotFound( );
         }
 
@@ -68,6 +78,7 @@ public sealed class CountryController : ControllerBase
 
         return NoContent( );
     }
+
 
     /// <summary>
     /// Patches a <see cref="Country"/>
@@ -79,6 +90,7 @@ public sealed class CountryController : ControllerBase
 
         if ( country == default )
         {
+            LogNotFound( id );
             return NotFound( );
         }
 
@@ -98,11 +110,29 @@ public sealed class CountryController : ControllerBase
 
         if ( country == default )
         {
+            LogNotFound( id );
             return NotFound( );
         }
 
         DataStore.Data.Countries.Remove( country );
 
         return NoContent( );
+    }
+
+    private static Country MapCountry( Country request )
+    {
+        var country = new Country
+        {
+            Id = DataStore.Data.Countries.Select( c => c.Id ).Max( ) + 1,
+            Name = request.Name,
+            Population = request.Population,
+            Capital = request.Capital
+        };
+        return country;
+    }
+
+    private void LogNotFound( int id )
+    {
+        _logger.LogInformation( "Country with Id \'{Id}\' was not found", id );
     }
 }
