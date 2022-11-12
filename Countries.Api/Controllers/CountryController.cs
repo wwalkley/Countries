@@ -1,4 +1,4 @@
-﻿using Countries.Api.Models.Country;
+﻿using Countries.Api.Models;
 using Countries.Api.Stores;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;

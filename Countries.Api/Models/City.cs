@@ -1,4 +1,4 @@
-﻿namespace Countries.Api.Models.City;
+﻿namespace Countries.Api.Models;
 
 public sealed class City
 {

@@ -1,4 +1,5 @@
 using Countries.Api.Stores;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration( )
@@ -20,8 +21,8 @@ builder.Services
 
 builder.Services.AddEndpointsApiExplorer( );
 builder.Services.AddSwaggerGen( );
-
 builder.Services.AddSingleton<DataStore>( );
+builder.Services.AddDbContext<CountryContext>( options => options.UseSqlite( "Data Source=Country.db" ) );
 
 var app = builder.Build( );
 
