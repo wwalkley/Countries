@@ -22,7 +22,15 @@ public sealed class CountryController : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<Country>> GetCountries( )
     {
-        return Ok( DataStore.Data.Countries );
+        try
+        {
+            return Ok( DataStore.Data.Countries );
+        }
+        catch ( Exception e )
+        {
+            LogError( e );
+            return Problem( );
+        }
     }
 
     /// <summary>
@@ -32,15 +40,23 @@ public sealed class CountryController : ControllerBase
     [HttpGet( "{id}", Name = "GetCountry" )]
     public ActionResult<Country> GetCountry( int id )
     {
-        var country = DataStore.Data.Countries.FirstOrDefault( c => c.Id == id );
-
-        if ( country == null )
+        try
         {
-            LogNotFound( id );
-            return NotFound( );
-        }
+            var country = DataStore.Data.Countries.FirstOrDefault( c => c.Id == id );
 
-        return Ok( country );
+            if ( country == null )
+            {
+                LogNotFound( id );
+                return NotFound( );
+            }
+
+            return Ok( country );
+        }
+        catch ( Exception e )
+        {
+            LogError( e );
+            return Problem( );
+        }
     }
 
     /// <summary>
@@ -49,12 +65,20 @@ public sealed class CountryController : ControllerBase
     [HttpPost( "" )]
     public ActionResult<Country> Create( Country request )
     {
-        var country = MapCountry( request );
+        try
+        {
+            var country = MapCountry( request );
 
-        DataStore.Data.Countries.Add( country );
+            DataStore.Data.Countries.Add( country );
 
-        _logger.LogInformation( "Created Country with id \'{CountryId}\'", country.Id );
-        return CreatedAtRoute( "GetCountry", new { country.Id }, country );
+            _logger.LogInformation( "Created Country with id \'{CountryId}\'", country.Id );
+            return CreatedAtRoute( "GetCountry", new { country.Id }, country );
+        }
+        catch ( Exception e )
+        {
+            LogError( e );
+            return Problem( );
+        }
     }
 
 
@@ -64,19 +88,27 @@ public sealed class CountryController : ControllerBase
     [HttpPut( "{id}" )]
     public ActionResult<Country> Update( int id, Country request )
     {
-        var country = DataStore.Data.Countries.FirstOrDefault( c => c.Id == id );
-
-        if ( country == default )
+        try
         {
-            LogNotFound( id );
-            return NotFound( );
+            var country = DataStore.Data.Countries.FirstOrDefault( c => c.Id == id );
+
+            if ( country == default )
+            {
+                LogNotFound( id );
+                return NotFound( );
+            }
+
+            country.Name = request.Name;
+            country.Capital = request.Capital;
+            country.Population = request.Population;
+
+            return NoContent( );
         }
-
-        country.Name = request.Name;
-        country.Capital = request.Capital;
-        country.Population = request.Population;
-
-        return NoContent( );
+        catch ( Exception e )
+        {
+            LogError( e );
+            return Problem( );
+        }
     }
 
 
@@ -86,17 +118,25 @@ public sealed class CountryController : ControllerBase
     [HttpPatch( "{id}" )]
     public ActionResult<Country> PartialUpdate( int id, JsonPatchDocument<Country> patchDocument )
     {
-        var country = DataStore.Data.Countries.FirstOrDefault( c => c.Id == id );
-
-        if ( country == default )
+        try
         {
-            LogNotFound( id );
-            return NotFound( );
+            var country = DataStore.Data.Countries.FirstOrDefault( c => c.Id == id );
+
+            if ( country == default )
+            {
+                LogNotFound( id );
+                return NotFound( );
+            }
+
+            patchDocument.ApplyTo( country );
+
+            return NoContent( );
         }
-
-        patchDocument.ApplyTo( country );
-
-        return NoContent( );
+        catch ( Exception e )
+        {
+            LogError( e );
+            return Problem( );
+        }
     }
 
 
@@ -106,33 +146,45 @@ public sealed class CountryController : ControllerBase
     [HttpDelete( "{id}" )]
     public ActionResult Delete( int id )
     {
-        var country = DataStore.Data.Countries.FirstOrDefault( c => c.Id == id );
-
-        if ( country == default )
+        try
         {
-            LogNotFound( id );
-            return NotFound( );
+            var country = DataStore.Data.Countries.FirstOrDefault( c => c.Id == id );
+
+            if ( country == default )
+            {
+                LogNotFound( id );
+                return NotFound( );
+            }
+
+            DataStore.Data.Countries.Remove( country );
+
+            return NoContent( );
         }
-
-        DataStore.Data.Countries.Remove( country );
-
-        return NoContent( );
+        catch ( Exception e )
+        {
+            LogError( e );
+            return Problem( );
+        }
     }
 
     private static Country MapCountry( Country request )
     {
-        var country = new Country
+        return new Country
         {
             Id = DataStore.Data.Countries.Select( c => c.Id ).Max( ) + 1,
             Name = request.Name,
             Population = request.Population,
             Capital = request.Capital
         };
-        return country;
     }
 
     private void LogNotFound( int id )
     {
         _logger.LogInformation( "Country with Id \'{Id}\' was not found", id );
+    }
+
+    private void LogError( Exception exception )
+    {
+        _logger.LogCritical( "Exception occured when executing function: {Exception}", exception );
     }
 }
