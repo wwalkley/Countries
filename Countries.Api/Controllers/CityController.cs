@@ -8,13 +8,20 @@ namespace Countries.Api.Controllers;
 [Route( "api/cities" )]
 public sealed class CityController : ControllerBase
 {
+    private readonly DataStore _dataStore;
+
+    public CityController( DataStore dataStore )
+    {
+        _dataStore = dataStore;
+    }
+
     /// <summary>
     /// Returns a list of <see cref="City"/>
     /// </summary>
     [HttpGet]
     public ActionResult<IEnumerable<City>> GetCities( )
     {
-        return Ok( DataStore.Data.Cities );
+        return Ok( _dataStore.Cities );
     }
 
     /// <summary>
@@ -24,7 +31,7 @@ public sealed class CityController : ControllerBase
     [HttpGet( "{id}" )]
     public ActionResult<City> GetCity( int id )
     {
-        var city = DataStore.Data.Cities.FirstOrDefault( c => c.Id == id );
+        var city = _dataStore.Cities.FirstOrDefault( c => c.Id == id );
 
         return city == default ? NotFound( ) : Ok( city );
     }

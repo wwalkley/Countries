@@ -5,9 +5,7 @@ namespace Countries.Api.Stores;
 
 public sealed class DataStore
 {
-    public static readonly DataStore Data = new( );
-
-    private DataStore( )
+    public DataStore( )
     {
         Countries = GetCountriesData( );
         Cities = GetCitiesData( );

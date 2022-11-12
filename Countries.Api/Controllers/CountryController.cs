@@ -9,11 +9,13 @@ namespace Countries.Api.Controllers;
 [Route( "api/countries" )]
 public sealed class CountryController : ControllerBase
 {
+    private readonly DataStore _dataStore;
     private readonly ILogger<CountryController> _logger;
 
-    public CountryController( ILogger<CountryController> logger )
+    public CountryController( ILogger<CountryController> logger, DataStore dataStore )
     {
         _logger = logger;
+        _dataStore = dataStore;
     }
 
     /// <summary>
@@ -24,7 +26,7 @@ public sealed class CountryController : ControllerBase
     {
         try
         {
-            return Ok( DataStore.Data.Countries );
+            return Ok( _dataStore.Countries );
         }
         catch ( Exception e )
         {
@@ -42,7 +44,7 @@ public sealed class CountryController : ControllerBase
     {
         try
         {
-            var country = DataStore.Data.Countries.FirstOrDefault( c => c.Id == id );
+            var country = _dataStore.Countries.FirstOrDefault( c => c.Id == id );
 
             if ( country == null )
             {
@@ -69,7 +71,7 @@ public sealed class CountryController : ControllerBase
         {
             var country = MapCountry( request );
 
-            DataStore.Data.Countries.Add( country );
+            _dataStore.Countries.Add( country );
 
             _logger.LogInformation( "Created Country with id \'{CountryId}\'", country.Id );
             return CreatedAtRoute( "GetCountry", new { country.Id }, country );
@@ -90,7 +92,7 @@ public sealed class CountryController : ControllerBase
     {
         try
         {
-            var country = DataStore.Data.Countries.FirstOrDefault( c => c.Id == id );
+            var country = _dataStore.Countries.FirstOrDefault( c => c.Id == id );
 
             if ( country == default )
             {
@@ -120,7 +122,7 @@ public sealed class CountryController : ControllerBase
     {
         try
         {
-            var country = DataStore.Data.Countries.FirstOrDefault( c => c.Id == id );
+            var country = _dataStore.Countries.FirstOrDefault( c => c.Id == id );
 
             if ( country == default )
             {
@@ -148,7 +150,7 @@ public sealed class CountryController : ControllerBase
     {
         try
         {
-            var country = DataStore.Data.Countries.FirstOrDefault( c => c.Id == id );
+            var country = _dataStore.Countries.FirstOrDefault( c => c.Id == id );
 
             if ( country == default )
             {
@@ -156,7 +158,7 @@ public sealed class CountryController : ControllerBase
                 return NotFound( );
             }
 
-            DataStore.Data.Countries.Remove( country );
+            _dataStore.Countries.Remove( country );
 
             return NoContent( );
         }
@@ -167,11 +169,12 @@ public sealed class CountryController : ControllerBase
         }
     }
 
-    private static Country MapCountry( Country request )
+
+    private Country MapCountry( Country request )
     {
         return new Country
         {
-            Id = DataStore.Data.Countries.Select( c => c.Id ).Max( ) + 1,
+            Id = _dataStore.Countries.Select( c => c.Id ).Max( ) + 1,
             Name = request.Name,
             Population = request.Population,
             Capital = request.Capital

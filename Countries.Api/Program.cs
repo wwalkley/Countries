@@ -1,3 +1,4 @@
+using Countries.Api.Stores;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration( )
@@ -19,6 +20,8 @@ builder.Services
 
 builder.Services.AddEndpointsApiExplorer( );
 builder.Services.AddSwaggerGen( );
+
+builder.Services.AddSingleton<DataStore>( );
 
 var app = builder.Build( );
 
