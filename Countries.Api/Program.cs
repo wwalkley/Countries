@@ -1,7 +1,6 @@
 using Countries.Api.Stores;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using DbContext = Countries.Api.Stores.DbContext;
 
 Log.Logger = new LoggerConfiguration( )
     .MinimumLevel.Debug( )
@@ -23,7 +22,7 @@ builder.Services
 builder.Services.AddEndpointsApiExplorer( );
 builder.Services.AddSwaggerGen( );
 builder.Services.AddSingleton<DataStore>( );
-builder.Services.AddDbContext<DbContext>( options => options.UseSqlite( "Data Source=Country.db" ) );
+builder.Services.AddDbContext<Context>( options => options.UseSqlite( "Data Source=Country.db" ) );
 
 var app = builder.Build( );
 
