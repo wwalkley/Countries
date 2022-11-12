@@ -3,12 +3,13 @@ using Countries.Api.Stores;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using DbContext = Countries.Api.Stores.DbContext;
 
 #nullable disable
 
 namespace Countries.Api.Migrations
 {
-    [DbContext(typeof(CountryContext))]
+    [DbContext(typeof(DbContext))]
     partial class CountryContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

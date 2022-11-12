@@ -4,12 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using DbContext = Countries.Api.Stores.DbContext;
 
 #nullable disable
 
 namespace Countries.Api.Migrations
 {
-    [DbContext(typeof(CountryContext))]
+    [DbContext(typeof(DbContext))]
     [Migration("20221112030214_Initial migration")]
     partial class Initialmigration
     {

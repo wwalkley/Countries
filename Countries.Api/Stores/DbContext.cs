@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Countries.Api.Stores;
 
-public class CountryContext : DbContext
+public class DbContext : Microsoft.EntityFrameworkCore.DbContext
 {
-    public CountryContext( DbContextOptions<CountryContext> options ) : base( options )
+    public DbContext( DbContextOptions<DbContext> options ) : base( options )
     {
     }
 
