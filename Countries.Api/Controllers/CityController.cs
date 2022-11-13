@@ -1,5 +1,5 @@
 ﻿using Countries.Api.Models;
-using Countries.Api.Stores;
+using Countries.Api.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Countries.Api.Controllers;
@@ -8,31 +8,65 @@ namespace Countries.Api.Controllers;
 [Route( "api/cities" )]
 public sealed class CityController : ControllerBase
 {
-    private readonly DataStore _dataStore;
+    private readonly AppRepository _appRepository;
+    private readonly ILogger<CityController> _logger;
 
-    public CityController( DataStore dataStore )
+    public CityController( AppRepository appRepository, ILogger<CityController> logger )
     {
-        _dataStore = dataStore;
+        _appRepository = appRepository;
+        _logger = logger;
     }
 
     /// <summary>
-    /// Returns a list of <see cref="CityDto"/>
+    /// Returns a list of <see cref="City"/>
     /// </summary>
     [HttpGet]
-    public ActionResult<IEnumerable<CityDto>> GetCities( )
+    public async Task<ActionResult<IEnumerable<CityDto>>> GetCities( )
     {
-        return Ok( _dataStore.Cities );
+        try
+        {
+            return Ok( await _appRepository.GetCountries( ) );
+        }
+        catch ( Exception e )
+        {
+            LogError( e );
+            return Problem( );
+        }
     }
 
     /// <summary>
-    /// Returns a singular <see cref="CityDto"/> based on provided Id.
+    /// Returns a singular <see cref="City"/> based on provided Id.
     /// </summary>
     /// <param name="id">An Id for a specific City</param>
     [HttpGet( "{id}" )]
-    public ActionResult<CityDto> GetCity( int id )
+    public async Task<ActionResult<CityDto>> GetCity( int id )
     {
-        var city = _dataStore.Cities.FirstOrDefault( c => c.Id == id );
+        try
+        {
+            var city = await _appRepository.GetCity( id );
 
-        return city == default ? NotFound( ) : Ok( city );
+            if ( city == null )
+            {
+                LogNotFound( id );
+                return NotFound( );
+            }
+
+            return Ok( city );
+        }
+        catch ( Exception e )
+        {
+            LogError( e );
+            return Problem( );
+        }
+    }
+
+    private void LogNotFound( int id )
+    {
+        _logger.LogInformation( "City with Id \'{Id}\' was not found", id );
+    }
+
+    private void LogError( Exception exception )
+    {
+        _logger.LogCritical( "Exception occured when executing function: {Exception}", exception );
     }
 }
