@@ -95,7 +95,7 @@ public sealed class CountryController : ControllerBase
         {
             var country = await _appRepository.GetCountry( id );
 
-            if ( country == default )
+            if ( country == null )
             {
                 LogNotFound( id );
                 return NotFound( );

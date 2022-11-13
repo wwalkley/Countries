@@ -83,6 +83,35 @@ public sealed class CityController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Updates a <see cref="City"/>
+    /// </summary>
+    [HttpPut( "{id}" )]
+    public async Task<ActionResult> UpdateCity( int id, CityDto cityDto )
+    {
+        try
+        {
+            var city = await _appRepository.GetCity( id );
+
+            if ( city == null )
+            {
+                LogNotFound( id);
+                return NotFound( );
+            }
+
+            city.Name = cityDto.Name;
+            city.CountryId = cityDto.CountryId;
+
+            await _appRepository.SaveChangesAsync( );
+            return NoContent( );
+        }
+        catch ( Exception e )
+        {
+            LogError( e );
+            return Problem( );
+        }
+    }
+
     private static City CreateCity( CityDto cityDto )
     {
         return new City
