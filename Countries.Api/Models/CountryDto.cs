@@ -1,6 +1,6 @@
 ﻿namespace Countries.Api.Models;
 
-public sealed class Country
+public sealed class CountryDto
 {
     public int Id { get; set; }
     public string Name { get; set; }
