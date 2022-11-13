@@ -16,20 +16,20 @@ public sealed class CityController : ControllerBase
     }
 
     /// <summary>
-    /// Returns a list of <see cref="City"/>
+    /// Returns a list of <see cref="CityDto"/>
     /// </summary>
     [HttpGet]
-    public ActionResult<IEnumerable<City>> GetCities( )
+    public ActionResult<IEnumerable<CityDto>> GetCities( )
     {
         return Ok( _dataStore.Cities );
     }
 
     /// <summary>
-    /// Returns a singular <see cref="City"/> based on provided Id.
+    /// Returns a singular <see cref="CityDto"/> based on provided Id.
     /// </summary>
     /// <param name="id">An Id for a specific City</param>
     [HttpGet( "{id}" )]
-    public ActionResult<City> GetCity( int id )
+    public ActionResult<CityDto> GetCity( int id )
     {
         var city = _dataStore.Cities.FirstOrDefault( c => c.Id == id );
 
