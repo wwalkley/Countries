@@ -16,5 +16,7 @@ public interface IAppRepository
 
     Task DeleteCountry( Country country );
 
+    Task AddCity( City country );
+
     Task<bool> SaveChangesAsync( );
 }

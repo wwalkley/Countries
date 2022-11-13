@@ -14,15 +14,6 @@ public sealed class AppRepository : IAppRepository
         _dbContext = dbContext;
     }
 
-    public async Task<IEnumerable<City>> GetCities( )
-    {
-        return await _dbContext.Cities.OrderBy( c => c.Id ).ToListAsync( );
-    }
-
-    public async Task<City?> GetCity( int id )
-    {
-        return await _dbContext.Cities.Where( c => c.Id == id ).FirstOrDefaultAsync( );
-    }
 
     public async Task<IEnumerable<Country>> GetCountries( )
     {
@@ -48,18 +39,29 @@ public sealed class AppRepository : IAppRepository
         await SaveChangesAsync( );
     }
 
-    /// <summary>
-    /// A way for us to know if changes were made
-    /// </summary>
-    public async Task<bool> SaveChangesAsync( )
+    public async Task<IEnumerable<City>> GetCities( )
     {
-        return await _dbContext.SaveChangesAsync( ) >= 0;
+        return await _dbContext.Cities.OrderBy( c => c.Id ).ToListAsync( );
     }
+
+    public async Task<City?> GetCity( int id )
+    {
+        return await _dbContext.Cities.Where( c => c.Id == id ).FirstOrDefaultAsync( );
+    }
+
 
     public async Task AddCity( City city )
     {
         _dbContext.Cities.Add( city );
 
         await SaveChangesAsync( );
+    }
+
+    /// <summary>
+    /// A way for us to know if changes were made
+    /// </summary>
+    public async Task<bool> SaveChangesAsync( )
+    {
+        return await _dbContext.SaveChangesAsync( ) >= 0;
     }
 }
