@@ -11,4 +11,10 @@ public interface IAppRepository
     Task<IEnumerable<Country>> GetCountries( );
 
     Task<Country?> GetCountry( int id );
+
+    Task AddCountry( Country country );
+
+    Task DeleteCountry( Country country );
+
+    Task<bool> SaveChangesAsync( );
 }
