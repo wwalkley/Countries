@@ -10,15 +10,15 @@ public sealed class DataStore
         Cities = GetCitiesData( );
     }
 
-    public List<Country> Countries { get; }
-    public List<City> Cities { get; }
+    public List<CountryDto> Countries { get; }
+    public List<CityDto> Cities { get; }
 
     /// <summary>
     /// Initial data store to test without database for Countries.
     /// </summary>
-    private static List<Country> GetCountriesData( )
+    private static List<CountryDto> GetCountriesData( )
     {
-        return new List<Country>
+        return new List<CountryDto>
         {
             new( ) { Id = 1, Name = "New Zealand", Capital = "Wellington", Population = 5131480 },
             new( ) { Id = 2, Name = "Australia", Capital = "Canberra", Population = 25890773 },
@@ -29,9 +29,9 @@ public sealed class DataStore
     /// <summary>
     /// Initial data store to test without database for Cities.
     /// </summary>
-    private static List<City> GetCitiesData( )
+    private static List<CityDto> GetCitiesData( )
     {
-        return new List<City>
+        return new List<CityDto>
         {
             new( ) { Id = 1, Name = "Auckland", CountryId = 1 },
             new( ) { Id = 2, Name = "Wellington", CountryId = 1 },
