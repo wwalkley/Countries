@@ -1,3 +1,4 @@
+using Countries.Api.Repositories;
 using Countries.Api.Stores;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -23,6 +24,7 @@ builder.Services.AddEndpointsApiExplorer( );
 builder.Services.AddSwaggerGen( );
 builder.Services.AddSingleton<DataStore>( );
 builder.Services.AddDbContext<Context>( options => options.UseSqlite( builder.Configuration["ConnectionStrings:DbConnectionString"] ) );
+builder.Services.AddScoped<IAppRepository, AppRepository>( );
 
 var app = builder.Build( );
 
