@@ -1,5 +1,6 @@
-﻿using Countries.Api.Models;
-using Countries.Api.Stores;
+﻿using Countries.Api.Entities;
+using Countries.Api.Models;
+using Countries.Api.Repositories;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,24 +10,24 @@ namespace Countries.Api.Controllers;
 [Route( "api/countries" )]
 public sealed class CountryController : ControllerBase
 {
-    private readonly DataStore _dataStore;
+    private readonly IAppRepository _appRepository;
     private readonly ILogger<CountryController> _logger;
 
-    public CountryController( ILogger<CountryController> logger, DataStore dataStore )
+    public CountryController( ILogger<CountryController> logger, IAppRepository appRepository )
     {
         _logger = logger;
-        _dataStore = dataStore;
+        _appRepository = appRepository;
     }
 
     /// <summary>
     /// Returns a list of <see cref="Country"/>
     /// </summary>
     [HttpGet]
-    public ActionResult<IEnumerable<Country>> GetCountries( )
+    public async Task<ActionResult<IEnumerable<CountryDto>>> GetCountries( )
     {
         try
         {
-            return Ok( _dataStore.Countries );
+            return Ok( await _appRepository.GetCountries( ) );
         }
         catch ( Exception e )
         {
@@ -40,11 +41,11 @@ public sealed class CountryController : ControllerBase
     /// </summary>
     /// <param name="id">An Id for a specific Country</param>
     [HttpGet( "{id}", Name = "GetCountry" )]
-    public ActionResult<Country> GetCountry( int id )
+    public async Task<ActionResult<CountryDto>> GetCountry( int id )
     {
         try
         {
-            var country = _dataStore.Countries.FirstOrDefault( c => c.Id == id );
+            var country = await _appRepository.GetCountry( id );
 
             if ( country == null )
             {
@@ -65,13 +66,13 @@ public sealed class CountryController : ControllerBase
     /// Creates a <see cref="Country"/>
     /// </summary>
     [HttpPost( "" )]
-    public ActionResult<Country> Create( Country request )
+    public async Task<ActionResult<CountryDto>> Create( CountryDto request )
     {
         try
         {
-            var country = MapCountry( request );
+            var country = CreateCountry( request );
 
-            _dataStore.Countries.Add( country );
+            await _appRepository.AddCountry( country );
 
             _logger.LogInformation( "Created Country with id \'{CountryId}\'", country.Id );
             return CreatedAtRoute( "GetCountry", new { country.Id }, country );
@@ -88,11 +89,11 @@ public sealed class CountryController : ControllerBase
     /// Updates a <see cref="Country"/>
     /// </summary>
     [HttpPut( "{id}" )]
-    public ActionResult<Country> Update( int id, Country request )
+    public async Task<ActionResult> Update( int id, CountryDto request )
     {
         try
         {
-            var country = _dataStore.Countries.FirstOrDefault( c => c.Id == id );
+            var country = await _appRepository.GetCountry( id );
 
             if ( country == default )
             {
@@ -104,6 +105,7 @@ public sealed class CountryController : ControllerBase
             country.Capital = request.Capital;
             country.Population = request.Population;
 
+            await _appRepository.SaveChangesAsync( );
             return NoContent( );
         }
         catch ( Exception e )
@@ -112,17 +114,16 @@ public sealed class CountryController : ControllerBase
             return Problem( );
         }
     }
-
 
     /// <summary>
     /// Patches a <see cref="Country"/>
     /// </summary>
     [HttpPatch( "{id}" )]
-    public ActionResult<Country> PartialUpdate( int id, JsonPatchDocument<Country> patchDocument )
+    public async Task<ActionResult<CountryDto>> PartialUpdate( int id, JsonPatchDocument<CountryDto> patchDocument )
     {
         try
         {
-            var country = _dataStore.Countries.FirstOrDefault( c => c.Id == id );
+            var country = await _appRepository.GetCountry( id );
 
             if ( country == default )
             {
@@ -130,8 +131,16 @@ public sealed class CountryController : ControllerBase
                 return NotFound( );
             }
 
-            patchDocument.ApplyTo( country );
+            // map domain entity to dto model
+            var countryDto = MapEntityModelToDtoModel( country );
 
+            // apply patch to dto
+            patchDocument.ApplyTo( countryDto );
+
+            // map patched dto model back into domain model
+            ApplyUpdateMapping( country, countryDto );
+
+            await _appRepository.SaveChangesAsync( );
             return NoContent( );
         }
         catch ( Exception e )
@@ -143,14 +152,14 @@ public sealed class CountryController : ControllerBase
 
 
     /// <summary>
-    /// Deletes a <see cref="Country"/>
+    /// Deletes a <see cref="CountryDto"/>
     /// </summary>
     [HttpDelete( "{id}" )]
-    public ActionResult Delete( int id )
+    public async Task<ActionResult> Delete( int id )
     {
         try
         {
-            var country = _dataStore.Countries.FirstOrDefault( c => c.Id == id );
+            var country = await _appRepository.GetCountry( id );
 
             if ( country == default )
             {
@@ -158,7 +167,7 @@ public sealed class CountryController : ControllerBase
                 return NotFound( );
             }
 
-            _dataStore.Countries.Remove( country );
+            await _appRepository.DeleteCountry( country );
 
             return NoContent( );
         }
@@ -170,14 +179,31 @@ public sealed class CountryController : ControllerBase
     }
 
 
-    private Country MapCountry( Country request )
+    private static Country CreateCountry( CountryDto request )
     {
         return new Country
         {
-            Id = _dataStore.Countries.Select( c => c.Id ).Max( ) + 1,
             Name = request.Name,
             Population = request.Population,
             Capital = request.Capital
+        };
+    }
+
+
+    private static void ApplyUpdateMapping( Country country, CountryDto countryDto )
+    {
+        country.Name = countryDto.Name;
+        country.Capital = countryDto.Capital;
+        country.Population = countryDto.Population;
+    }
+
+    private static CountryDto MapEntityModelToDtoModel( Country country )
+    {
+        return new CountryDto
+        {
+            Name = country.Name,
+            Capital = country.Capital,
+            Population = country.Population
         };
     }
 
