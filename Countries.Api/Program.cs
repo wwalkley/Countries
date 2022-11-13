@@ -22,7 +22,7 @@ builder.Services
 builder.Services.AddEndpointsApiExplorer( );
 builder.Services.AddSwaggerGen( );
 builder.Services.AddSingleton<DataStore>( );
-builder.Services.AddDbContext<Context>( options => options.UseSqlite( "Data Source=Country.db" ) );
+builder.Services.AddDbContext<Context>( options => options.UseSqlite( builder.Configuration["ConnectionStrings:DbConnectionString"] ) );
 
 var app = builder.Build( );
 
